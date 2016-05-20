@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="build/react.js"></script>
+    <script src="build/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+  </head>
+  <body>
+
+    <!-- this is my sample-->
+  <div class="" id = "registration-container"></div>
+
+
+  <script type="text/babel">
+    var RegistrationForm = React.createClass({
+      getInitialState: function() {
+        return ({
+          numberOfDays: 30,
+          monthsArray:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+          formData:{
+            title:'',
+            firstName:'',
+            lastName:'',
+            street:'',
+            town:'',
+            postCode:'',
+            birthMonth:new Date().getMonth(),
+            birthYear:new Date ().getFullYear(),
+            birthDay:0,
+            isLegalAge: false
+          },
+          isFormValid: false,
+          showReceipt: false
+
+        });
+      },
+      onChange: function (name, e) {
+        var value = e.target.value;
+        var formData = this.state.formData;
+        formData[name] = value;
+        this.setState({formData:formData}, this.validateForm());
+      },
+      submit: function(){
+        this.setState({showReceipt: true})
+      },
+
+      onChangeBirthMonth: function(e){
+        var value = e.target.value;
+        var numberOfDays = this.getNumerOfDays(this.state.formData.birthYear, value);
+        var formData = this.state.formData;
+        formData.birthMonth = value;
+        this.setState({
+          formData:formData,
+          numberOfDays: numberOfDays
+        },this.validateForm());
+      },
+      validateForm: function(){
+          var isValid = true;
+
+          if(this.state.formData.title===''){
+            isValid = false;
+          }
+          if(this.state.formData.firstName===''){
+            isValid = false;
+          }
+          if(this.state.formData.lastName===''){
+            isValid = false;
+          }
+          if(this.state.formData.birthYear===(new Date().getFullYear())){
+            isValid = false;
+          }
+          this.setState({isFormValid: isValid});
+      },
+      getNumerOfDays : function(year, month){
+        var numberOfDays = new Date(parseInt(year), parseInt(month), 0).getDate();
+        return numberOfDays;
+      },
+      render: function () {
+        var registrationReciept
+        var st = this.state;
+        if(st.showReceipt){
+          registrationReciept = <div>
+            Registration Reciept<br/>
+            Congratulations, You have successfully registered<br/>
+            Title: {st.formData.title}<br/>
+            First Name :{st.formData.firstName}<br/>
+            Last Name :{st.formData.lastName}<br/>
+            Address: {st.formData.street} {st.formData.town} {st.formData.postCode} <br/>
+            BDAY: {st.formData.birthMonth} {st.formData.birthDay} {st.formData.birthYear}
+          </div>
+        }
+
+        var currYear = new Date().getFullYear();
+        var birthDayOptions  =[];
+        var birthMonthOptions = [];
+        for (var i=0; i<st.numberOfDays; i++){
+          birthDayOptions.push(<option key = {i+1} value = {i+1}>{i+1}</option>)
+        }
+
+        for (var i=0; i<st.monthsArray.length; i++){
+          birthMonthOptions.push(<option  key = {i} value = {i+1}>{st.monthsArray[i]}</option>)
+        }
+        return (
+          <div>
+            <input
+              type="text"
+              name="title"
+              onChange={this.onChange.bind(null, 'title')}
+              value={this.state.title}
+              placeholder="Title"
+              />
+              <br/>
+
+              <input
+                type="text"
+                name="firstName"
+                onChange={this.onChange.bind(null, 'firstName')}
+                value={this.state.firstName}
+                placeholder="First Name"
+              />
+              <br/>
+              <input
+                type="text"
+                name="lastName"
+                onChange={this.onChange.bind(null, 'lastName')}
+                value={st.lastName}
+                placeholder="Last Name"
+              />
+
+              <br/>
+              <input
+                type="text"
+                name="street"
+                onChange={this.onChange.bind(null, 'street')}
+                value={st.street}
+                placeholder="Street"
+              />
+              <input
+                type="text"
+                name="town"
+                onChange={this.onChange.bind(null, 'town')}
+                value={st.town}
+                placeholder="Town"
+              />
+
+              <input
+                type="text"
+                name="postCode"
+                onChange={this.onChange.bind(null, 'postCode')}
+                value={st.postCode}
+                placeholder="Post Code"
+              />
+
+              <br/>
+              18+ <input type="checkbox" value = {this.state.formData.isLegalAge} onChange = {this.onChange.bind(null, 'isLegalAge')}/>
+              <br/>
+              <select className = "birth-month" onChange = {this.onChangeBirthMonth} value = {st.birthMonth} placeHolder = "Birth Month">
+                {birthMonthOptions}
+              </select>
+
+              <select className = "birth-day" onChange = {this.onChange.bind(null,"birthDay")} value ={st.birthDay} placeHolder = "Birth Day">
+                {birthDayOptions}
+              </select>
+
+              <input
+                className = "birthYear"
+                value = {st.birthYear}
+                onChange = {this.onChange.bind(null, "birthYear")}
+              />
+
+              <button onClick = {this.submit} disabled = {!this.state.isFormValid}>Register</button>
+              {registrationReciept}
+          </div>
+
+          );
+
+      }
+    });
+
+
+    ReactDOM.render(
+      <div>
+        <h1>REGISTRATION</h1>
+        <RegistrationForm />
+      </div>,
+      document.getElementById('registration-container')
+    );
+    </script>
+  </body>
+</html>
